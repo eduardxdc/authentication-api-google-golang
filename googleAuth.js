@@ -1,30 +1,28 @@
-const crypto = require('crypto');
 const express = require('express');
+const crypto = require('crypto');
 const { google } = require('googleapis');
 
 const oauth2Client = new google.auth.OAuth2(
-  "1039393286929-ptaonfdeqgooa2jjg2e3rd480iesfrms.apps.googleusercontent.com",
-  "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",
+  "private token for the code to upload to github, if you want to use it on your machine, read google's api documentation to generate your own;",
+  "private token for the code to upload to github, if you want to use it on your machine, read google's api documentation to generate your own;",
   "http://localhost:8080/callback"
 );
 
-const scopes = ['profile', 'email'];
-const oauthStateString = generateRandomString(32);
+const oauthStateString = crypto.randomBytes(32).toString('base64').slice(0, 32);
 
 const app = express();
 
-app.get('/', (req, res) => {
-  const htmlIndex = `<html><body><a href="/login">CONSEGUI CARALHO</a></body></html>`;
-  res.send(htmlIndex);
+app.get('/', (_, res) => {
+  res.send('<html><body><a href="/login">LOGIN</a></body></html>');
 });
 
-app.get('/login', (req, res) => {
-  const url = oauth2Client.generateAuthUrl({
+app.get('/login', (_, res) => {
+  const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: scopes,
+    scope: ['profile', 'email'],
     state: oauthStateString
   });
-  res.redirect(url);
+  res.redirect(authUrl);
 });
 
 app.get('/callback', async (req, res) => {
@@ -42,10 +40,6 @@ app.get('/callback', async (req, res) => {
     res.redirect('/');
   }
 });
-
-function generateRandomString(length) {
-  return crypto.randomBytes(length).toString('base64').slice(0, length);
-}
 
 const PORT = 8080;
 app.listen(PORT, () => {
