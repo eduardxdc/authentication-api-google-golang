@@ -1,2 +1,2 @@
-# authentication-api-google-golang
-Login authentication using the Google API with GO
+# authentication-api-google-nodejs
+Login authentication using the Google API with NodeJs
